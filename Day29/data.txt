@@ -1,0 +1,3 @@
+Facebook | dummy@gmail.com | 123456
+Google | asm@gmail.com | qwert
+X | elon_musk@x.com | genius

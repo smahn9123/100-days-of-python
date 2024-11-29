@@ -4,24 +4,35 @@ import random
 
 BACKGROUND_COLOR = "#B1DDC6"
 
-data = pandas.read_csv("data/french_words.csv")
-word_dict_list = data.to_dict(orient="records")
+try:
+    data = pandas.read_csv("data/words_to_learn.csv")
+except FileNotFoundError:
+    data = pandas.read_csv("data/french_words.csv")
+finally:
+    words_to_learn_list = data.to_dict(orient="records")
 
+current_word = {}
 timer = None
 
 def next_card():
-    global timer
+    global current_word, timer
     if timer:
         window.after_cancel(timer)
 
-    card_chosen = random.choice(word_dict_list)
-    french = card_chosen["French"]
+    current_word = random.choice(words_to_learn_list)
+    french = current_word["French"]
     canvas.itemconfig(canvas_image, image=card_front_img)
     canvas.itemconfig(title_text, fill="black", text="French")
     canvas.itemconfig(word_text, fill="black", text=french)
 
-    english = card_chosen["English"]
+    english = current_word["English"]
     timer = window.after(3000, flip_card, english)
+
+def next_card_right():
+    words_to_learn_list.remove(current_word)
+    data = pandas.DataFrame(words_to_learn_list)
+    data.to_csv("data/words_to_learn.csv", index=False)
+    next_card()
 
 def flip_card(english):
     canvas.itemconfig(canvas_image, image=card_back_img)
@@ -45,7 +56,7 @@ wrong_button = Button(image=wrong_img, highlightthickness=0, command=next_card)
 wrong_button.grid(row=1, column=0)
 
 right_img = PhotoImage(file="images/right.png")
-right_button = Button(image=right_img, highlightthickness=0, command=next_card)
+right_button = Button(image=right_img, highlightthickness=0, command=next_card_right)
 right_button.grid(row=1, column=1)
 
 next_card()

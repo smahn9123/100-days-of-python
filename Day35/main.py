@@ -1,7 +1,10 @@
 import requests
+import smtplib
 
 OWM_Endpoint = "https://api.openweathermap.org/data/2.8/onecall"
 api_key = "208ab7d587ed10416141713ee5f85750"
+MY_EMAIL = "secret"
+MY_PASSWORD = "secret"
 
 langitude = 36.830486
 longitude = 127.145787
@@ -27,3 +30,11 @@ for hour_data in weather_slice:
 
 if will_rain:
     print("Bring an Umbrella.")
+    with smtplib.SMTP("smtp.gmail.com") as connection:
+        connection.starttls()  # makes connection secure
+        connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+        connection.sendmail(
+            from_addr=MY_EMAIL,
+            to_addrs="secret",
+            msg=f"Subject:It's going to rain today\n\nRemember to bring an umbrella!",
+        )

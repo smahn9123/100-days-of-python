@@ -1,24 +1,58 @@
+import requests
+import smtplib
+
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
 
-## STEP 1: Use https://www.alphavantage.co
-# When STOCK price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
+ALPHAVANTAGE_API_ENDPOINT = "https://www.alphavantage.co/query"
+ALPHAVANTAGE_API_KEY = "7OYJTT2YG8DOQK7K"
 
-## STEP 2: Use https://newsapi.org
-# Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
+NEWSAPI_API_ENDPOINT = "https://newsapi.org/v2/everything"
+NEWSAPI_API_KEY = "87168d8fa4784f0ea261465d65877f38"
 
-## STEP 3: Use https://www.twilio.com
-# Send a seperate message with the percentage change and each article's title and description to your phone number. 
+MY_EMAIL = "secret"
+MY_PASSWORD = "secret"
 
+stock_params = {
+    "function": "TIME_SERIES_DAILY",
+    "symbol": STOCK,
+    "apikey": ALPHAVANTAGE_API_KEY
+}
 
-#Optional: Format the SMS message like this: 
-"""
-TSLA: 🔺2%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-or
-"TSLA: 🔻5%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-"""
+stock_response = requests.get(ALPHAVANTAGE_API_ENDPOINT, params=stock_params)
+stock_response.raise_for_status()
+stock_data = stock_response.json()["Time Series (Daily)"]
+stock_data_list = list(stock_data.values())
 
+yesterday_data = stock_data_list[0]
+yesterday_stock_close_price = float(yesterday_data["4. close"])
+
+day_before_yesterday_data = stock_data_list[1]
+day_before_yesterday_stock_close_price = float(day_before_yesterday_data["4. close"])
+
+diff_ratio = abs(yesterday_stock_close_price - day_before_yesterday_stock_close_price) / yesterday_stock_close_price
+
+if diff_ratio >= 0.05:
+
+    stock_params = {
+        "qInTitle": COMPANY_NAME,
+        "apiKey": NEWSAPI_API_KEY,
+    }
+
+    news_response = requests.get(NEWSAPI_API_ENDPOINT, params=stock_params)
+    news_response.raise_for_status()
+    articles = news_response.json()["articles"]
+    three_articles = articles[:3]
+
+    title_description = [[i["title"], i["description"]] for i in three_articles]
+    formatted_articles = [f"Subject:Headline: {article['title']}.\n\nBrief: {article['description']}" for article in three_articles]
+
+    for article in formatted_articles:
+        with smtplib.SMTP("smtp.gmail.com") as connection:
+            connection.starttls() # makes connection secure
+            connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+            connection.sendmail(
+                from_addr=MY_EMAIL,
+                to_addrs="secret",
+                msg=article,
+            )

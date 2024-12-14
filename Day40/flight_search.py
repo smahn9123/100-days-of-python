@@ -42,28 +42,39 @@ class FlightSearch:
             return "N/A"
 
     def get_flights_raw_data(self, city):
+
+        def _get_flights_raw_data(_city, _header, _non_stop="true"):
+            _flights = []
+
+            day = datetime.today() + timedelta(days=1)
+            while day <= datetime.today() + timedelta(days=3):
+                amadeus_flight_offers_params = {
+                    "originLocationCode": "LON",
+                    "destinationLocationCode": _city["iataCode"],
+                    "departureDate": day.strftime("%Y-%m-%d"),
+                    "adults": 1,
+                    "nonStop": _non_stop,
+                    "currencyCode": "GBP",
+                }
+                response = requests.get(url="https://test.api.amadeus.com/v2/shopping/flight-offers",
+                                        headers=_header,
+                                        params=amadeus_flight_offers_params
+                                        )
+                _flights.extend(response.json()["data"])
+
+                day += timedelta(days=1)
+
+            return _flights
+
         header = {
             "Authorization": "Bearer " + self._token,
         }
         print(f"Getting flights for {city['city']}...")
 
-        flights = []
-        day = datetime.today() + timedelta(days=1)
-        while day <= datetime.today() + timedelta(days=3):
-            amadeus_flight_offers_params = {
-                "originLocationCode": "LON",
-                "destinationLocationCode": city["iataCode"],
-                "departureDate": day.strftime("%Y-%m-%d"),
-                "adults": 1,
-                "nonStop": "true",
-                "currencyCode": "GBP",
-            }
-            response = requests.get(url="https://test.api.amadeus.com/v2/shopping/flight-offers",
-                                    headers=header,
-                                    params=amadeus_flight_offers_params
-                                    )
-            flights.extend(response.json()["data"])
+        flights = _get_flights_raw_data(city, header)
 
-            day += timedelta(days=1)
+        if not flights:
+            print("Looking for stop flights")
+            flights = _get_flights_raw_data(city, header, "false")
 
         return flights

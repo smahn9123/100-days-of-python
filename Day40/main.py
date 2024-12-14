@@ -23,6 +23,7 @@ notification_manager = NotificationManager()
 for city in sheet_data:
     flights_raw_data = flight_search.get_flights_raw_data(city)
     flight_data = FlightData.find_cheapest_flight(city["city"], flights_raw_data)
+    # print(flight_data)
 
     if flight_data.price == "N/A":
         print(f"No flight to {city['city']} for next 6 months found.")

@@ -45,5 +45,6 @@ class FlightData:
                                          arrival_airport_code,
                                          departure_time,
                                          arrival_time)
+                lowest_price = price
 
         return flight_data

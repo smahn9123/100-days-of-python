@@ -30,5 +30,7 @@ for city in sheet_data:
     elif flight_data.price < city["lowestPrice"]:
         print(f"Lower price found for flight to {city['city']}! £{flight_data.price}")
         notification_manager.send_notification(city["city"], flight_data)
+        users_email_list = data_manager.get_customer_emails()
+        notification_manager.send_emails(city["city"], flight_data, users_email_list)
     else:
         print(f"Lower price for flight to {city['city']} not found.")

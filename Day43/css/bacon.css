@@ -5,11 +5,9 @@ h1 {
   font-size: 200px;
 }
 
-/*
 img {
   background-color: red;
 }
-*/
 
 /******************************CLASS SELECTORS******************************/
 
@@ -19,4 +17,10 @@ img {
 
 .broccoli {
   background-color: red;
+}
+
+/******************************ID SELECTORS******************************/
+
+#heading {
+  color: blue;
 }

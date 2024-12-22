@@ -2,15 +2,18 @@ body {
   margin: 0;
   text-align: center;
   font-family: "Merriweather", serif;
+  font-size: 200%;
 }
 
 h1 {
-  margin-top: 0;
+  font-size: 5.625rem;
+  margin: 50px auto 0 auto;
   font-family: "Sacramento", cursive;
 }
 
 h2 {
   font-family: "Montserrat", sans-serif;
+  font-size: 2.5rem;
 }
 
 h3 {

@@ -1,5 +1,7 @@
 # Day 44
 
+Built my personal profile webpage using newly learned HTML and CSS skills.<br>
+<br>
 Lessons: <br>
 
 This div is a special HTML element that allows us to divide our content up on our web site so that we can structure each div separately.<br>

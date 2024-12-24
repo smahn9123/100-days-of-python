@@ -79,3 +79,11 @@ a {
   float: right;
   margin-left: 30px;
 }
+
+.python-skill-description {
+  /* clear: left; */
+}
+
+.c-skill-description {
+  /* clear: right; */
+}
